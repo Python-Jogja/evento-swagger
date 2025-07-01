@@ -1,0 +1,350 @@
+openapi: 3.0.3
+info:
+  title: PyJogja Community API
+  version: 1.0.0
+  description: API Contract for PyJogja Community Website
+servers:
+  - url: https://api.pyjogja.dev/v1
+paths:
+  /auth/register:
+    post:
+      tags: [Authentication]
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [username, email, password]
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User registered successfully
+
+  /auth/login:
+    post:
+      tags: [Authentication]
+      summary: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Login success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Logout user
+      responses:
+        '200':
+          description: Logout success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Logged out successfully
+
+  /auth/forgot-password:
+    post:
+      tags: [Authentication]
+      summary: Forgot password request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email]
+              properties:
+                email:
+                  type: string
+      responses:
+        '200':
+          description: Reset link sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Reset link has been sent
+
+  /me:
+    get:
+      tags: [Authentication]
+      summary: Get current user profile
+      responses:
+        '200':
+          description: Current user profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /me/events:
+    get:
+      tags: [Authentication]
+      summary: Get events the current user registered
+      responses:
+        '200':
+          description: List of events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Event'
+
+  /me/rewards:
+    get:
+      tags: [Authentication]
+      summary: Get current user rewards
+      responses:
+        '200':
+          description: List of rewards
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+
+  /me/notifications:
+    post:
+      tags: [Authentication]
+      summary: Send device token for web push
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+      responses:
+        '200':
+          description: Token registered
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Notification token saved
+
+  /events:
+    post:
+      tags: [Events]
+      summary: Create new event
+      responses:
+        '201':
+          description: Event created
+    get:
+      tags: [Events]
+      summary: Get list of events
+      responses:
+        '200':
+          description: List of events
+
+  /events/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Events]
+      summary: Get event detail
+      responses:
+        '200':
+          description: Event detail
+    patch:
+      tags: [Events]
+      summary: Update event
+      responses:
+        '200':
+          description: Event updated
+    delete:
+      tags: [Events]
+      summary: Delete event
+      responses:
+        '200':
+          description: Event deleted
+
+  /events/{id}/tickets:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Events]
+      summary: Get event tickets
+      responses:
+        '200':
+          description: Tickets list
+
+  /events/tickets/{id}/orders:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [Events]
+      summary: Create order for a ticket
+      responses:
+        '201':
+          description: Order created
+
+  /events/participants/{id}/checkin:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [Events]
+      summary: Check-in participant
+      responses:
+        '200':
+          description: Check-in success
+
+  /events/participants/{id}/checkout:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [Events]
+      summary: Check-out participant
+      responses:
+        '200':
+          description: Check-out success
+
+  /events/participants/{id}/generate-certificate:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    post:
+      tags: [Certificates]
+      summary: Generate participant certificate
+      responses:
+        '200':
+          description: Certificate generated
+
+  /events/participants/{id}/certificate:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema:
+          type: string
+    get:
+      tags: [Certificates]
+      summary: Get certificate
+      responses:
+        '200':
+          description: Certificate retrieved
+
+  /rewards/redeem:
+    post:
+      tags: [Rewards]
+      summary: Redeem reward
+      responses:
+        '200':
+          description: Reward redeemed
+
+  /notifications/send:
+    post:
+      tags: [Notifications]
+      summary: Send notification (admin only)
+      responses:
+        '200':
+          description: Notification sent
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        avatar:
+          type: string
+        point_balance:
+          type: integer
+
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        location:
+          type: string
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        thumbnail_url:
+          type: string
