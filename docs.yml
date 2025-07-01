@@ -133,20 +133,6 @@ paths:
                 items:
                   $ref: '#/components/schemas/Event'
 
-  /me/rewards:
-    get:
-      tags: [Authentication]
-      summary: Get current user rewards
-      responses:
-        '200':
-          description: List of rewards
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-
   /me/notifications:
     post:
       tags: [Authentication]
@@ -296,14 +282,6 @@ paths:
       responses:
         '200':
           description: Certificate retrieved
-
-  /rewards/redeem:
-    post:
-      tags: [Rewards]
-      summary: Redeem reward
-      responses:
-        '200':
-          description: Reward redeemed
 
   /notifications/send:
     post:
